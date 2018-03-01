@@ -7,6 +7,27 @@
 #include <time.h>
 #include <string.h>
 
+
+#include <unistd.h>
+
+/// struct stat {
+///     dev_t         st_dev;      /* устройство */
+///     ino_t         st_ino;      /* inode */
+///     mode_t        st_mode;     /* режим доступа */
+///     nlink_t       st_nlink;    /* количество жестких ссылок */
+///     uid_t         st_uid;      /* идентификатор пользователя-владельца */
+///     gid_t         st_gid;      /* идентификатор группы-владельца */
+///     dev_t         st_rdev;     /* тип устройства */
+///                                /* (если это устройство) */
+///     off_t         st_size;     /* общий размер в байтах */
+///     blksize_t     st_blksize;  /* размер блока ввода-вывода */
+///                                /* в файловой системе */
+///     blkcnt_t      st_blocks;   /* количество выделенных блоков */
+///     time_t        st_atime;    /* время последнего доступа */
+///     time_t        st_mtime;    /* время последней модификации */
+///     time_t        st_ctime;    /* время последнего изменения */
+/// };
+
 #define ERROR_CODE -1
 #define MAX_ERR_MSG_SIZE 300
 #define RIGHTS_TYPES_NUM 9
@@ -19,6 +40,7 @@ struct stat get_file_status(char *filename);
 void print_file_info(char *filename);
 
 char *get_file_access_rights(struct stat *status);
+
 
 char *get_file_owner(struct stat *status);
 
@@ -44,14 +66,21 @@ int main(int argc, char **argv) {
     int filename_index;
 
     for (filename_index = 1; filename_index < argc; filename_index++) {
-        print_file_info(argv[filename_index]);
+            print_file_info(argv[filename_index]);
     }
 
     return EXIT_SUCCESS;
 }
 
 void print_file_info(char *filename) {
-    struct stat status = get_file_status(filename);
+    struct stat status;
+    //  = get_file_status(filename);
+
+    if (stat(filename, &status) == -1) {
+        perror(filename);
+        return;
+    }
+
     char *access_rights = get_file_access_rights(&status);
 
     printf("%c%s %d %s %s %d %.19s %s\n",
@@ -72,7 +101,7 @@ struct stat get_file_status(char *filename) {
     struct stat status;
 
     if (stat(filename, &status) == -1) {
-        perror(strcat("GET FILE INFO", filename));
+        perror(filename);
         exit(EXIT_FAILURE);
     }
 
@@ -114,9 +143,14 @@ int get_file_links_num(struct stat *status) {
 }
 
 char *get_file_owner(struct stat *status) {
+    /// struct passwd {
+    ///         char    *pw_name;       /* имя пользователя */
+    ///         /* ... */
+    /// };
+
     struct passwd *owner_info = getpwuid(status->st_uid);
     if (owner_info == NULL) {
-        perror("Getting owner info");
+        perror("GET OWNER INFO");
         exit(EXIT_FAILURE);
     }
 
@@ -126,7 +160,7 @@ char *get_file_owner(struct stat *status) {
 char *get_file_group(struct stat *status) {
     struct group *group_info = getgrgid(status->st_gid);
     if (group_info == NULL) {
-        perror("Getting group info");
+        perror("GET OWNER INFO");
         exit(EXIT_FAILURE);
     }
 
@@ -134,19 +168,17 @@ char *get_file_group(struct stat *status) {
 }
 
 int get_file_size(struct stat *status) {
-    // ubuntu-style
     return (int) status->st_size;
 
-    // solara-style
-    //    if ((status->st_mode & S_IFMT) == S_IFREG) {
-    //        return status->st_size;
-    //    }
+//    if ((status->st_mode & S_IFMT) == S_IFREG) {
+//        return status->st_size;
+//    }
 }
 
 char *get_file_timestamp(struct stat *status) {
     char *time = ctime(&status->st_mtime);
     if (time == NULL) {
-        perror("Getting time");
+        perror("GET TIME");
         exit(EXIT_FAILURE);
     }
 
