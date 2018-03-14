@@ -4,13 +4,25 @@
 
 void main()
 {
-    putenv("TZ=:America/Los_Angeles"); // LA timezone mathes for Californa.
-    tzset();                            
+    // This function is automatically called by the 
+    // other time conversion functions
+    // that depend on the timezone.
+    //
+    // tzset();                            
 
-    time_t lt;
-    lt = time(NULL);
-    struct tm *ptr;    
-    ptr = localtime(&lt);
+    // Doesn.t depend on the timezone.
+    time_t t_sec = time(NULL);
+
+    // LA timezone mathes for Californa.
+    if (putenv("TZ=:America/Los_Angeles")) {
+        // Insufficient space to allocate new environment
+        perror("Putenv returned a failure code. Aborting.");
+        return;
+    }
+   
+    // Man: The return value points to a 
+    // statically allocated struct.
+    struct tm *tm_ptr = localtime(&t_sec);
     
-    printf("California local time is: %s", asctime(ptr));
+    printf("California local time is: %s", asctime(tm_ptr));
 }
