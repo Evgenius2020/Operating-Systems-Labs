@@ -6,6 +6,8 @@
 
 #define LINES_COUNT_MAX 100
 
+int print_table_console(int file_descriptor, Line_Record *search_table, unsigned search_table_size);
+
 int main(int argc, char *argv[])
 {
     if (argc != 2)
