@@ -9,11 +9,18 @@
 int print_table_console(int file_descriptor, Line_Record *search_table, unsigned search_table_size)
 {
     printf("Lines range: [%d, %d]\n", 1, search_table_size);
-    do
+    while (1)
     {
+        int line_number, scanf_result;
+        char ending;
         printf("$ ");
-        int line_number;
-        scanf("%d", &line_number);
+        scanf_result = scanf("%d%c", &line_number, &ending);
+
+        if (scanf_result != 2 || ending != '\n')
+        {
+            fprintf(stderr, "Format Error\n");
+            return EXIT_FAILURE;
+        }
 
         if (line_number == END_LINE_NUMBER)
         {
@@ -28,7 +35,7 @@ int print_table_console(int file_descriptor, Line_Record *search_table, unsigned
 
         print_line(file_descriptor, search_table[line_number]);
         putchar('\n');
-    } while (1);
+    }
 
     return EXIT_SUCCESS;
 }
