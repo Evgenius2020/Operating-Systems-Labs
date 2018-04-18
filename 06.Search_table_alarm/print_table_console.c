@@ -15,14 +15,19 @@ void on_alarm(int code)
 
 // Loop proccessing of user input.
 // Prints line by its number (starts form 1).
-int print_table_console(int file_descriptor, Line_Record *search_table, unsigned search_table_size)
+int print_table_console(int file_descriptor, Line_Record *search_table,
+                        unsigned search_table_size)
 {
     if (signal(SIGALRM, &on_alarm) == SIG_ERR)
     {
         perror("Signal set error: ");
         exit(EXIT_FAILURE);
     }
-    siginterrupt(SIGALRM, 1);
+    if (siginterrupt(SIGALRM, 1) == -1)
+    {
+        perror("siginterrupt() Error: ");
+        exit(EXIT_FAILURE);
+    }
     alarm(SECONDS_TO_COUNT);
 
     printf("Lines range: [%d, %d]\n", 1, search_table_size);
@@ -31,7 +36,10 @@ int print_table_console(int file_descriptor, Line_Record *search_table, unsigned
         int line_number, scanf_result;
         char ending;
         printf("$ ");
+        // On alarm, stops to wait user input.
         scanf_result = scanf("%d%c", &line_number, &ending);
+        // User entered line number faster than SECOND_TO_COUNT.
+        // So alarm counting must to be stoped.
         alarm(0);
         if (is_timeout)
         {
