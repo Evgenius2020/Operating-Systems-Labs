@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     if (argc != 2)
     {
-        fprintf(stderr, "usage: %s [file]\n", argv[0]);
+        fprintf(stderr, "Usage: %s [file]\n", argv[0]);
         return EINVAL;
     }
 
