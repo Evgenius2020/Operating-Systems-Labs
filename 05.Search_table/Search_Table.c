@@ -39,7 +39,8 @@ int build_search_table(int file_descriptor, Line_Record *search_table, unsigned 
                     printf("File is too long, readed first %d lines.\n", max_size);
                     return current_line - 1;
                 }
-                search_table[current_line + 1].offset = search_table[current_line].offset + current_line_position;
+                search_table[current_line + 1].offset =
+                    search_table[current_line].offset + current_line_position;
                 current_line++;
                 current_line_position = 0;
             }
@@ -47,7 +48,7 @@ int build_search_table(int file_descriptor, Line_Record *search_table, unsigned 
     }
     search_table[current_line].length = current_line_position;
     return current_line;
-} 
+}
 
 void print_line(int file_descriptor, Line_Record line_record)
 {
@@ -55,8 +56,9 @@ void print_line(int file_descriptor, Line_Record line_record)
 
     for (unsigned i = 0; i < line_record.length; i += BUFFER_SIZE)
     {
-        unsigned bytes_to_read =
-            (BUFFER_SIZE > line_record.length - i) ? line_record.length - i : BUFFER_SIZE;
+        unsigned bytes_to_read = (BUFFER_SIZE > line_record.length - i)
+                                     ? line_record.length - i
+                                     : BUFFER_SIZE;
         if (read(file_descriptor, buffer, bytes_to_read) == -1)
         {
             perror("Reading Error: ");

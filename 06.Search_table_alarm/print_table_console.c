@@ -5,7 +5,7 @@
 #include "../05.Search_table/Search_Table.h"
 
 #define END_LINE_NUMBER 0
-#define SECONDS_TO_COUNT 2
+#define SECONDS_TO_COUNT 5
 
 int is_timeout = 0;
 void on_alarm(int code)
@@ -43,7 +43,7 @@ int print_table_console(int file_descriptor, Line_Record *search_table,
         alarm(0);
         if (is_timeout)
         {
-            for (unsigned i = 0; i < search_table_size; i++)
+            for (unsigned i = 0; i < search_table_size + 1; i++)
             {
                 print_line(file_descriptor, search_table[i]);
                 putchar('\n');

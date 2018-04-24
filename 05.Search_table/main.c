@@ -6,7 +6,8 @@
 
 #define LINES_COUNT_MAX 100
 
-int print_table_console(int file_descriptor, Line_Record *search_table, unsigned search_table_size);
+int print_table_console(int file_descriptor, Line_Record *search_table,
+                        unsigned search_table_size);
 
 int main(int argc, char *argv[])
 {
@@ -25,8 +26,10 @@ int main(int argc, char *argv[])
         return EIO;
     }
 
-    int search_table_size = build_search_table(file_descriptor, search_table, LINES_COUNT_MAX);
-    int exit_code = print_table_console(file_descriptor, search_table, search_table_size);
+    int search_table_size =
+        build_search_table(file_descriptor, search_table, LINES_COUNT_MAX);
+    int exit_code =
+        print_table_console(file_descriptor, search_table, search_table_size);
 
     free(search_table);
     return exit_code;
