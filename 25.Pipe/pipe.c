@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
     }
     // ====== Parent process. ===========================================================
     if (pid != 0)
-    {
+    {   
+        close(pipe_ends[0]);
         strcpy(str, argv[1]);
         if (write(pipe_ends[1], str, strlen(str) + 1) == -1)
         {
@@ -38,12 +39,14 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
         printf("Parent: sent \"%s\" \n", str);
+        close(pipe_ends[1]);        
     }
     // ----------------------------------------------------------------------------------
 
     // ====== Child process. ============================================================
     else
     {
+        close(pipe_ends[1]);        
         if (read(pipe_ends[0], str, 100) == -1)
         {
             perror("read() Error: ");
@@ -55,6 +58,7 @@ int main(int argc, char *argv[])
             str[i] = (char)toupper(str[i]);
         }
         printf("Child: upper \"%s\" \n", str);
+        close(pipe_ends[0]);
     }
     // ----------------------------------------------------------------------------------
 
