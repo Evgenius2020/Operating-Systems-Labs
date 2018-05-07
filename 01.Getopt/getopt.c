@@ -1,15 +1,10 @@
-// -s  Процесс становится лидером группы. Подсказка: смотриии setpgid(2).
-// -u  Печатает значение ulimit
-// -Unew_ulimit  Изменяет значение ulimit. Подсказка: смотри atol(3C) на странице руководства strtol(3C)
-// -c  Печатает размер в байтах core-файла, который может быть создан.
-// -Csize  Изменяет размер core-файла
-
-#include <stdio.h>     // printf()
-#include <unistd.h>    // getuid(), geteuid()
-#include <string.h>    // strcmp()
-#include <sys/types.h> // uid_t
-#include <stdlib.h>    // getenv()
-#include <ulimit.h>    // ulimit()
+#include <stdio.h>        // printf()
+#include <unistd.h>       // getuid(), geteuid()
+#include <string.h>       // strcmp()
+#include <sys/types.h>    // uid_t
+#include <sys/resource.h> // getrlimit()
+#include <stdlib.h>       // getenv()
+#include <ulimit.h>       // ulimit()
 
 int execute_command(char *command);
 
@@ -25,7 +20,7 @@ int main(int argc, char *argv[], char *envp[])
         }
         if (execute_status == 1)
         {
-            printf("Format error: '%s'", argv[i]);
+            printf("Format error: '%s'\n", argv[i]);
         }
     }
     return EXIT_SUCCESS;
@@ -39,17 +34,41 @@ int execute_command(char *command)
         return 1;
     }
 
+    if (command[1] == 'c')
+    {
+        struct rlimit limits;
+        if (getrlimit(RLIMIT_CORE, &limits) == -1)
+        {
+            return -1;
+        }
+
+        printf("%li\n", limits.rlim_cur);
+        return 0;
+    }
+
     if (command[1] == 'i')
     {
         printf("user_id=[%d], user_eid=[%d]\n", getuid(), geteuid());
         return 0;
     }
+
     if (command[1] == 'p')
     {
         printf("pid=[%d], parent_pid=[%d], group_id=[%d]\n",
-               getpid(), getppid(), getgid());
+               getpid(), getppid(), getpgrp());
         return 0;
     }
+
+    if (command[1] == 's')
+    {
+        if (setpgrp() == -1)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
     if (command[1] == 'u')
     {
         printf("%li\n", ulimit(UL_GETFSIZE, 0));
@@ -67,6 +86,37 @@ int execute_command(char *command)
             s = *(__environ + i);
         }
 
+        return 0;
+    }
+
+    if (command[1] == 'C')
+    {
+        long arg = atol(command + 2);
+        if (arg == 0 && strcmp(command, "0"))
+        {
+            return 1;
+        }
+        struct rlimit limits;
+        limits.rlim_cur = arg;
+        if (setrlimit(RLIMIT_CORE, &limits) == -1)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    if (command[1] == 'U')
+    {
+        long arg = atol(command + 2);
+        if (arg == 0 && strcmp(command, "0"))
+        {
+            return 1;
+        }
+        if (ulimit(UL_SETFSIZE, arg) == -1)
+        {
+            return -1;
+        }
         return 0;
     }
 
