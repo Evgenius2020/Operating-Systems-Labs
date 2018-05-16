@@ -7,7 +7,7 @@
 
 char buffer[BUFFER_SIZE];
 
-// Returns size of builed search table.
+// Returns size of result search table.
 int build_search_table(int file_descriptor, Line_Record *search_table, unsigned max_size)
 {
     int current_line = 1;

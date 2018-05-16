@@ -1,8 +1,8 @@
-#include <unistd.h>    // lseek
-#include <stdio.h>     // perror
-#include <stdlib.h>    // exit
-#include <sys/mman.h>  // mmap
-#include <sys/stat.h>  // fstat
+#include <unistd.h>   // lseek
+#include <stdio.h>    // perror
+#include <stdlib.h>   // exit
+#include <sys/mman.h> // mmap
+#include <sys/stat.h> // fstat
 #include "Search_Table.h"
 
 off_t get_file_size(int file_descriptor)
@@ -20,8 +20,7 @@ off_t get_file_size(int file_descriptor)
 
 char *map_whole_file(int file_descriptor, off_t file_size)
 {
-    char *file_map =
-        mmap(NULL, file_size, PROT_READ, MAP_SHARED, file_descriptor, 0L);
+    char *file_map = mmap(NULL, file_size, PROT_READ, MAP_SHARED, file_descriptor, 0L);
     if (file_map == MAP_FAILED)
     {
         perror("mmap() Error: ");
@@ -31,7 +30,7 @@ char *map_whole_file(int file_descriptor, off_t file_size)
     return file_map;
 }
 
-// Returns size of builed search table.
+// Returns size of result search table.
 int build_search_table(int file_descriptor, Line_Record *search_table, unsigned max_size)
 {
     off_t file_size = get_file_size(file_descriptor);
