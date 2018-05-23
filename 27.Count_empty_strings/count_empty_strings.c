@@ -1,6 +1,5 @@
 #include <stdlib.h> // exit(), EXIT_SUCCESS, EXIT_FAILURE
-#include <stdio.h>  // popen(), pclose(), fread(), fwrite(), stdout
-#include <ctype.h>  // toupper()
+#include <stdio.h>  // popen(), pclose()
 #include <string.h> // strcat()
 
 void close_pipe(FILE *pipe)

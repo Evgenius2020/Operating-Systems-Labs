@@ -2,7 +2,7 @@
 #include <stdlib.h> // putenv()
 #include <stdio.h>  //perror()
 
-int custom_execvpe(const char *file, char *const argv[], char *const envp[]);
+int initialize_custom_execvpe(const char *file, char *const argv[], char *const envp[]);
 
 int main()
 {
@@ -12,7 +12,7 @@ int main()
         "PATH=/usr/bin",
         "KEY=VALUE",
         NULL};
-    if (custom_execvpe(file, argv, envp) == -1)
+    if (initialize_custom_execvpe(file, argv, envp) == -1)
     {
         perror("execvpe() Error: ");
         return EXIT_FAILURE;
@@ -21,7 +21,7 @@ int main()
     return EXIT_SUCCESS;
 }
 
-int custom_execvpe(const char *file, char *const argv[], char *const envp[])
+int initialize_custom_execvpe(const char *file, char *const argv[], char *const envp[])
 {
     unsigned i = 0;
     // Stupid way to drop old envp.
